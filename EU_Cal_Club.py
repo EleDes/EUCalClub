@@ -2,10 +2,8 @@
 # -*- coding: utf-8 -*-
 # developed & tested with Python 3.7
 
-import time
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from Gpib import *
-from decimal import *
 
 # Setup measurements, modify as needed (example is for 3458A/3457A)
 class Setup:
@@ -20,10 +18,6 @@ class Setup:
 														'TARM HOLD'
 													],
 										'post':		[
-														#'OFORMAT ASCII',
-														#'NRDGS 1,AUTO',
-														#'MEM OFF',
-														#'NDIG 9', #only display, standard is NDIG 7
 														'TRIG AUTO',
 														'END ALWAYS',
 														'TARM AUTO',
@@ -32,6 +26,12 @@ class Setup:
 										'DC 10V':	[
 														'DCV 10',
 														'NPLC 100',
+													],
+										'OHMF 10k':	[
+														'OHMF 1E4',
+														'OCOMP ON',
+														'DELAY 1',
+														'APER 1',
 													]
 									},
 					}
@@ -44,10 +44,6 @@ class Setup:
 														'TARM HOLD'
 													],
 										'post':		[
-														#'OFORMAT ASCII',
-														#'NRDGS 1,AUTO',
-														#'MEM OFF',
-														#'NDIG 9', #only display, standard is NDIG 7
 														'TRIG AUTO',
 														'END ALWAYS',
 														'TARM AUTO',
@@ -75,7 +71,7 @@ class Setup:
 		return dmm
 		
 def main():
-	dmm_reference = Setup.dmm(Setup.dmm_reference, 'DC 10V')
+	dmm_reference = Setup.dmm(Setup.dmm_reference, 'DC 10V') # or 'OHMF 10k'
 	dmm_ntc = Setup.dmm(Setup.dmm_ntc, 'NTC 10k')
 	
 	while True:
@@ -85,9 +81,7 @@ def main():
 
 		ntc_value = dmm_ntc.read().strip().decode('utf-8')
 
-		print(f'{reference_value_datetime.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]} > ref: {reference_value}, ntc: {ntc_value}')
-		#print(f'{reference_value_datetime} > reference value: {reference_value:10.6f}, ntc value: {ntc_value:7.3f}')
-		#print(f'test')
+		print(f'{reference_value_datetime.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]} > ref: {reference_value}\tntc: {ntc_value}')
 	
 		# Save values
 		values = map(str, [reference_value_datetime.isoformat(), reference_value, ntc_value])
